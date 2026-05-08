@@ -41,13 +41,37 @@ Optional conversion utilities also use:
 
 ## Install In QGIS
 
-1. Zip this plugin folder so the ZIP contains:
+1. Install from the packaged plugin ZIP in this repository root:
+   - `hydroinsar_qgis.zip`
+2. Or create your own QGIS-ready ZIP from the full plugin folder.
+   Important:
+   The ZIP should contain the entire plugin package, not just a single `.py` file.
+   It should include at least:
    - `__init__.py`
-   - `W3RAExplorer.py`
    - `metadata.txt`
-2. In QGIS, open `Plugins -> Manage and Install Plugins -> Install from ZIP`.
-3. Select the ZIP file.
-4. Enable `W3RA Explorer`.
+   - `W3RAExplorer.py`
+   - `backend_dialog.py`
+   - `netcdf2shp.py`
+   - `tools/`
+3. In QGIS, open `Plugins -> Manage and Install Plugins -> Install from ZIP`.
+4. Select the ZIP file.
+5. Enable `W3RA Explorer`.
+
+### Build The ZIP On Windows
+
+If you cloned the repo on Windows, the safest approach is to zip the whole plugin folder with an underscore package name:
+
+```powershell
+Copy-Item .\hydroinsar-qgis .\hydroinsar_qgis -Recurse
+Remove-Item .\hydroinsar_qgis\.git -Recurse -Force
+Compress-Archive -Path .\hydroinsar_qgis -DestinationPath .\hydroinsar_qgis.zip -Force
+```
+
+Then verify:
+
+```powershell
+tar -tf .\hydroinsar_qgis.zip
+```
 
 ## Run The Plugin
 
