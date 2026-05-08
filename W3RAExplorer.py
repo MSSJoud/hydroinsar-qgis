@@ -3,12 +3,12 @@ import re
 
 import netCDF4 as nc
 import numpy as np
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-from PyQt5.QtCore import Qt
-from PyQt5.QtWidgets import QAction, QComboBox, QDialog, QFileDialog, QInputDialog, QLabel, QLineEdit, QMessageBox, QVBoxLayout
 from qgis.core import QgsProject
 from qgis.gui import QgsMapTool, QgsVertexMarker
+from qgis.PyQt.QtCore import Qt
+from qgis.PyQt.QtWidgets import QAction, QComboBox, QDialog, QFileDialog, QInputDialog, QLabel, QLineEdit, QMessageBox, QVBoxLayout
 from scipy.ndimage import gaussian_filter1d
 from scipy.optimize import curve_fit
 

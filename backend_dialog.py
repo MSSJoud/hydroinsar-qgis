@@ -1,7 +1,8 @@
 import os
 
-from PyQt5.QtCore import QProcess, QSettings
-from PyQt5.QtWidgets import (
+from qgis.core import QgsProject
+from qgis.PyQt.QtCore import QProcess, QSettings
+from qgis.PyQt.QtWidgets import (
     QComboBox,
     QDialog,
     QFileDialog,
@@ -16,7 +17,6 @@ from PyQt5.QtWidgets import (
     QTextEdit,
     QVBoxLayout,
 )
-from qgis.core import QgsProject
 
 
 class BackendRunnerDialog(QDialog):

@@ -29,8 +29,9 @@ The plugin entry point is valid and the Python files compile successfully. The m
   - `numpy`
   - `matplotlib`
   - `netCDF4`
-  - `PyQt5`
   - `scipy`
+
+The plugin uses `qgis.PyQt` imports so it is compatible with newer Qt6-based QGIS builds as well as earlier QGIS environments.
 
 Optional conversion utilities also use:
 
