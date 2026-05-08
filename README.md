@@ -56,7 +56,7 @@ Optional conversion utilities also use:
    - `tools/`
 3. In QGIS, open `Plugins -> Manage and Install Plugins -> Install from ZIP`.
 4. Select the ZIP file.
-5. Enable `W3RA Explorer`.
+5. Enable `HydroInSAR Explorer`.
 
 ### Build The ZIP On Windows
 
@@ -88,7 +88,7 @@ The plugin reads the series directly from the NetCDF file. You do not need to co
 
 ## Run The Backend From QGIS
 
-The plugin now adds a second action: `W3RA Backend Runner`.
+The plugin now adds a second action: `HydroInSAR Backend Runner`.
 
 Use it when you want to:
 

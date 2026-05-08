@@ -27,7 +27,7 @@ class BackendRunnerDialog(QDialog):
         self.process = None
         self.pending_action = None
 
-        self.setWindowTitle("W3RA Backend Runner")
+        self.setWindowTitle("HydroInSAR Backend Runner")
         self.resize(980, 860)
 
         self.settings = QSettings()

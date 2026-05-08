@@ -5,7 +5,7 @@ import netCDF4 as nc
 import numpy as np
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-from qgis.core import QgsProject
+from qgis.core import QgsCoordinateReferenceSystem, QgsCoordinateTransform, QgsProject
 from qgis.gui import QgsMapTool, QgsVertexMarker
 from qgis.PyQt.QtCore import Qt
 from qgis.PyQt.QtWidgets import QAction, QComboBox, QDialog, QFileDialog, QInputDialog, QLabel, QLineEdit, QMessageBox, QVBoxLayout
@@ -111,6 +111,16 @@ def extract_point_series(dataset, var_name, lat, lon):
     if var_name in dataset.variables and dataset.variables[var_name].ndim == 3:
         return _extract_standard_series(dataset, var_name, lat_idx, lon_idx)
     return _extract_yearly_series(dataset, var_name, lat_idx, lon_idx)
+
+
+def _map_point_to_dataset_lonlat(canvas, point):
+    source_crs = canvas.mapSettings().destinationCrs()
+    target_crs = QgsCoordinateReferenceSystem("EPSG:4326")
+    if not source_crs.isValid() or source_crs == target_crs:
+        return point.x(), point.y()
+    transform = QgsCoordinateTransform(source_crs, target_crs, QgsProject.instance().transformContext())
+    transformed = transform.transform(point)
+    return transformed.x(), transformed.y()
 
 
 class InteractivePlotDialog(QDialog):
@@ -220,7 +230,7 @@ class PointClickTool(QgsMapTool):
 
     def canvasReleaseEvent(self, event):
         point = self.canvas.getCoordinateTransform().toMapCoordinates(event.pos())
-        lon, lat = point.x(), point.y()
+        lon, lat = _map_point_to_dataset_lonlat(self.canvas, point)
 
         if self.marker:
             self.canvas.scene().removeItem(self.marker)
@@ -272,15 +282,15 @@ class W3RAExplorer:
 
     def initGui(self):
         self.tool = PointClickTool(self.iface.mapCanvas())
-        self.explorer_action = QAction("W3RA Explorer", self.iface.mainWindow())
+        self.explorer_action = QAction("HydroInSAR Explorer", self.iface.mainWindow())
         self.explorer_action.triggered.connect(self.activate_plugin)
         self.iface.addToolBarIcon(self.explorer_action)
-        self.iface.addPluginToMenu("&W3RA Explorer", self.explorer_action)
+        self.iface.addPluginToMenu("&HydroInSAR Explorer", self.explorer_action)
 
-        self.backend_action = QAction("W3RA Backend Runner", self.iface.mainWindow())
+        self.backend_action = QAction("HydroInSAR Backend Runner", self.iface.mainWindow())
         self.backend_action.triggered.connect(self.open_backend_dialog)
         self.iface.addToolBarIcon(self.backend_action)
-        self.iface.addPluginToMenu("&W3RA Explorer", self.backend_action)
+        self.iface.addPluginToMenu("&HydroInSAR Explorer", self.backend_action)
 
     def activate_plugin(self):
         input_file, _ = QFileDialog.getOpenFileName(None, "Select NetCDF File", "", "NetCDF (*.nc)")
@@ -292,7 +302,7 @@ class W3RAExplorer:
         self.iface.mapCanvas().setMapTool(self.tool)
         QMessageBox.information(
             None,
-            "W3RA Explorer",
+            "HydroInSAR Explorer",
             "NetCDF selected. Click on the map near the grid cell you want to inspect.",
         )
 
@@ -310,9 +320,9 @@ class W3RAExplorer:
     def unload(self):
         if self.explorer_action:
             self.iface.removeToolBarIcon(self.explorer_action)
-            self.iface.removePluginMenu("&W3RA Explorer", self.explorer_action)
+            self.iface.removePluginMenu("&HydroInSAR Explorer", self.explorer_action)
         if self.backend_action:
             self.iface.removeToolBarIcon(self.backend_action)
-            self.iface.removePluginMenu("&W3RA Explorer", self.backend_action)
+            self.iface.removePluginMenu("&HydroInSAR Explorer", self.backend_action)
         if self.tool:
             self.iface.mapCanvas().unsetMapTool(self.tool)
