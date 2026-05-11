@@ -12,6 +12,11 @@ import numpy as np
 
 GROUPED_FALLBACK_NAMES = ("Load_total", "Sg")
 LAYERED_FALLBACK_NAMES = ("S0", "Ss", "Sd", "Sg", "Sr")
+LAYERED_GROUPS = {
+    "Shallow_water": ("S0", "Ss"),
+    "Groundwater": ("Sg",),
+    "Deep_water": ("Sd",),
+}
 
 
 def sanitize_name(name: str) -> str:
@@ -43,6 +48,22 @@ def create_variable(ds, name, values, dims, units="mm", long_name=None):
     var.units = units
     var.long_name = long_name or name
     return var
+
+
+def create_layered_group_variables(ds, cube: np.ndarray, field_names: list[str]) -> None:
+    index_by_name = {name: idx for idx, name in enumerate(field_names)}
+    for output_name, source_names in LAYERED_GROUPS.items():
+        source_indices = [index_by_name[name] for name in source_names if name in index_by_name]
+        if not source_indices or output_name in ds.variables:
+            continue
+        values = np.sum(cube[:, source_indices, :, :], axis=1)
+        create_variable(
+            ds,
+            output_name,
+            values,
+            ("time", "y", "x"),
+            long_name=output_name.replace("_", " "),
+        )
 
 
 def write_time_variable(ds, time_values: np.ndarray, time_origin: str | None):
@@ -103,6 +124,9 @@ def export_npz_to_netcdf(input_path: Path, output_path: Path, mode: str, time_or
                 dims=("time", "y", "x"),
                 long_name=field_name,
             )
+
+        if resolved_mode == "layered":
+            create_layered_group_variables(ds, cube, field_names)
 
         if "y_obs" in src.files:
             create_variable(ds, "insar_observed", src["y_obs"], ("time", "y", "x"), long_name="Observed InSAR deformation")
